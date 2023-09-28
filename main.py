@@ -13,6 +13,7 @@ pio.templates.default = 'plotly_white'
 dconfig = {'displayModeBar': False}
 server = Flask(__name__)
 app = dash.Dash(name=__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app.title = "CSCI 453 ML"
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([html.H1(children='Tips Dataset', style={'textAlign': 'center'})])]),
