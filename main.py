@@ -38,6 +38,10 @@ app.layout = dbc.Container([
                            config=dconfig,
                            style={'height': '90vh'})],
                 )]),
+    dbc.Row([
+        dbc.Col([html.H4("The distribution of tips is right skewed. Tips between 16-18 are the most common tip amounts.",
+                         style={'textAlign': 'left'})])
+    ]),
     html.Hr(),
     dbc.Row([
         dbc.Col([html.H3(
@@ -56,6 +60,13 @@ app.layout = dbc.Container([
                            config=dconfig,
                            style={'height': '90vh'})],
                 )]),
+
+    dbc.Row([
+        dbc.Col([html.H4(
+            "There is moderate correlation between the tip amount and the bill amount. It indicates that higher"
+            "the bill amount, higher is the tips.",
+            style={'textAlign': 'left'})])
+    ]),
 
     html.Hr(),
     dbc.Row([
