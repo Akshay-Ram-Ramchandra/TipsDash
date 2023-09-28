@@ -17,7 +17,7 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([html.H1(children='Tips Dataset', style={'textAlign': 'center'})])]),
 
-    dbc.Row([html.H3(children=str([i for i in df.columns]), style={'textAlign': 'center'})]),
+    dbc.Row([html.H3(children="Availablecolumns:" + str([i for i in df.columns]), style={'textAlign': 'center'})]),
 
     dbc.Row([
         dbc.Col([html.H3("Plots", style={'textAlign': 'left'})])
