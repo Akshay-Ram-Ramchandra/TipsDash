@@ -1,179 +1,58 @@
 import dash
-from dash import Dash, html, dcc, callback, Output, Input
+from dash import Dash, html, dcc, Input, Output, State, html
 import dash_bootstrap_components as dbc
-import plotly.express as px
-import plotly.io as pio
+from dash_bootstrap_components._components.Container import Container
+
 from flask import Flask
-import pandas as pd
-dash.register_page(__name__, path='/')
-df = pd.read_csv('tips.csv')
+import configparser
+import os
 
-df['bill_percent'] = (df['tip'] / df['total_bill']) * 100
-pio.templates.default = 'plotly_white'
-dconfig = {'displayModeBar': False}
+config = configparser.ConfigParser()
+config.read('config.ini')
+base_path = config['PATHS']['base']
+
 server = Flask(__name__)
-app = dash.Dash(name=__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.title = "CSCI453ML"
-app.layout = dbc.Container([
-    dbc.Row([
-        dbc.Col([html.H1(children='Tips Dataset', style={'textAlign': 'center'})])]),
+app = Dash(__name__, use_pages=True,
+           server=server,
+           pages_folder=os.path.join(base_path, 'pages'),
+           external_stylesheets=[dbc.themes.BOOTSTRAP])
+navbar = dbc.Navbar(
+    [
+        dbc.NavbarToggler(id="navbar-toggler"),
+        dbc.Collapse(
+            dbc.Nav(
+                [
+                    dbc.DropdownMenu(
+                        children=[dbc.DropdownMenuItem('Home', href='/')] +
+                        [
+                                     dbc.DropdownMenuItem(page['name'], href=page['path'])
+                                     for page in dash.page_registry.values() if page['name'] != 'Landing'
+                                 ],
+                        nav=True,
+                        in_navbar=True,
+                        label="More",
+                        right=False,  # Move the dropdown to the right
+                        direction="down"
+                    ),
+                ],
+                className="ml-auto",  # Align menu to the right
+                navbar=True,
+            ),
+            id="navbar-collapse",
+            navbar=True,
+        ),
+        dbc.NavbarBrand("Akshay Ram: Machine Learning Fall 2023", href="#"),
+    ],
+    color="dark",
+    dark=True,
+    expand="lg",  # Expand to full width for the hamburger menu
+    fixed="top",  # Fixed position at the top
+)
 
-    dbc.Row([html.H3(children="Availablecolumns:" + str([i for i in df.columns]), style={'textAlign': 'center'})]),
-
-    dbc.Row([
-        dbc.Col([html.H3("Plots", style={'textAlign': 'left'})])
-    ]),
-    dbc.Row([
-        dbc.Col([html.H3("Question 7: Plot a histogram of the total_bill amounts. Label your axes appropriately.",
-                         style={'textAlign': 'left'})])
-    ]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(id='q7',
-                           figure=px.histogram(df,
-                                               'total_bill',
-                                               title="Distribution of total bill amount").update_xaxes(
-                               title_text="Total Bill ($)").
-                           update_yaxes(title_text="Count"),
-                           config=dconfig,
-                           style={'height': '90vh'})],
-                )]),
-    dbc.Row([
-        dbc.Col([html.H4("The distribution of tips is right skewed. Tips between 16-18 are the most common tip amounts.",
-                         style={'textAlign': 'left'})])
-    ]),
-    html.Hr(),
-    dbc.Row([
-        dbc.Col([html.H3(
-            "Create a scatter plot to visualize the relationship between the total_bill and tip. Label your axes and "
-            "give your plot a title.",
-            style={'textAlign': 'left'})])
-    ]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(id='q8',
-                           figure=px.scatter(df,
-                                             'total_bill',
-                                             'tip',
-                                             title="Total Bill by Tip").update_xaxes(title_text="Total Bill ($)").
-                           update_yaxes(title_text="Tip ($)"),
-                           config=dconfig,
-                           style={'height': '90vh'})],
-                )]),
-
-    dbc.Row([
-        dbc.Col([html.H4(
-            "There is moderate correlation between the tip amount and the bill amount. It indicates that higher"
-            "the bill amount, higher is the tips.",
-            style={'textAlign': 'left'})])
-    ]),
-
-    html.Hr(),
-    dbc.Row([
-        dbc.Col([html.H3(
-            "Question 9: Using a bar plot, visualize the average tip amount for each day of the week.",
-            style={'textAlign': 'left'})])
-    ]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(id='q9',
-                           figure=px.bar(df.groupby(['day'])['tip'].mean().reindex(['Thur', 'Fri', 'Sat', 'Sun']),
-                                         title="Distribution of average tips,by day"
-                                         ).update_xaxes(title_text="Day of the week").
-                           update_yaxes(title_text="Average Tip ($)"),
-                           config=dconfig,
-                           style={'height': '90vh'})],
-                )]),
-
-    html.Hr(),
-
-    dbc.Row([
-        dbc.Col([html.H3(
-            "Question 9: Using a bar plot, visualize the average tip amount for each day of the week.",
-            style={'textAlign': 'left'})])
-    ]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(
-            figure=px.box(df,
-                          x='day',
-                          y='tip',
-                          title="Tips by day of the week",
-                          color='day',
-                          category_orders={'day': ['Thur', 'Fri', 'Sat', 'Sun']}
-                          ).update_xaxes(title_text="Day of the week").
-            update_yaxes(title_text="Tip ($)"),
-            config=dconfig,
-            style={'height': '90vh'})],
-        )]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(
-            figure=px.box(df,
-                          x='day',
-                          y='bill_percent',
-                          title="Percentage of tip by day of the week",
-                          color='day',
-                          category_orders={'day': ['Thur', 'Fri', 'Sat', 'Sun']}
-                          ).update_xaxes(title_text="Day of the week").
-            update_yaxes(title_text="Tip ($)"),
-            config=dconfig,
-            style={'height': '90vh'})],
-        )]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(
-            figure=px.scatter(df,
-                              x='total_bill',
-                              y='tip',
-                              title="Bill amount by tip; Colored by percentage",
-                              color='bill_percent',
-                              ).update_xaxes(title_text="Bill amount ($)").
-            update_yaxes(title_text="Tip ($)"),
-            config=dconfig,
-            style={'height': '90vh'})],
-        )]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(
-            figure=px.scatter(df,
-                              x='tip',
-                              y='bill_percent',
-                              color='smoker',
-                              title="Tip by Bill percentage; Colored by smoker",
-                              ).update_xaxes(title_text="Tip ($)").
-            update_yaxes(title_text="Percentage of bill"),
-            config=dconfig,
-            style={'height': '90vh'})],
-        )]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(
-            figure=px.box(df,
-                          x='time',
-                          y='bill_percent',
-                          color='time',
-                          title="Tip by Bill percentage; Colored by time",
-                          ).update_xaxes(title_text="Tip ($)").
-            update_yaxes(title_text="Percentage of bill"),
-            config=dconfig,
-            style={'height': '90vh'})],
-        )]),
-
-    dbc.Row([
-        dbc.Col([dcc.Graph(
-            figure=px.histogram(df,
-                                x='bill_percent',
-                                title="Count of tip percentage",
-                                marginal='box',
-                                ).update_xaxes(title_text="Tip percentage").
-            update_yaxes(title_text="Frequency"),
-            config=dconfig,
-            style={'height': '90vh'})],
-        )]),
-
-],
-    fluid=False)
+app.layout = html.Div([
+    navbar,
+    dash.page_container
+])
 
 if __name__ == '__main__':
     app.run(debug=True)
