@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.io as pio
 from flask import Flask
 import pandas as pd
-
+dash.register_page(__name__, path='/')
 df = pd.read_csv('tips.csv')
 
 df['bill_percent'] = (df['tip'] / df['total_bill']) * 100
