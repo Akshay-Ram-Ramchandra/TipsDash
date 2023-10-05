@@ -36,7 +36,7 @@ navbar = dbc.Navbar(
             id="navbar-collapse",
             navbar=True,
         ),
-        dbc.NavbarBrand("Akshay Ram: Machine Learning Fall 2023", href="#"),
+        dbc.NavbarBrand("Machine Learning Fall 2023", href="#"),
     ],
     color="dark",
     dark=True,
