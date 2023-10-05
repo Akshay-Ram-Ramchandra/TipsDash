@@ -6,19 +6,14 @@ import plotly.io as pio
 from flask import Flask
 import pandas as pd
 import os
-import configparser
 
 # server = Flask(__name__)
 # app = dash.Dash(name=__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # app.title = "CSCI453ML"
 
 dash.register_page(__name__, path='/tips')
-config = configparser.ConfigParser()
-config.read('config.ini')
-base_path = config['PATHS']['base']
 
-
-df = pd.read_csv(os.path.join(base_path, 'pages/tips.csv'))
+df = pd.read_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tips.csv'))
 
 df['bill_percent'] = (df['tip'] / df['total_bill']) * 100
 pio.templates.default = 'plotly_white'
@@ -185,4 +180,3 @@ layout = dbc.Container([
 
 ],
     fluid=False)
-

@@ -4,17 +4,12 @@ import dash_bootstrap_components as dbc
 from dash_bootstrap_components._components.Container import Container
 
 from flask import Flask
-import configparser
 import os
-
-config = configparser.ConfigParser()
-config.read('config.ini')
-base_path = config['PATHS']['base']
 
 server = Flask(__name__)
 app = Dash(__name__, use_pages=True,
            server=server,
-           pages_folder=os.path.join(base_path, 'pages'),
+           pages_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pages'),
            external_stylesheets=[dbc.themes.BOOTSTRAP])
 navbar = dbc.Navbar(
     [
