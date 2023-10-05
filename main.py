@@ -25,7 +25,7 @@ navbar = dbc.Navbar(
                                  ],
                         nav=True,
                         in_navbar=True,
-                        label="More",
+                        label="Other Pages",
                         right=False,  # Move the dropdown to the right
                         direction="down"
                     ),
